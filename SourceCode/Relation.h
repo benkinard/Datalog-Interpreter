@@ -1,6 +1,7 @@
 #ifndef RELATION_H
 #define RELATION_H
 #include "Header.h"
+#include "Tuple.h"
 #include <string>
 #include <list>
 #include <set>
@@ -16,7 +17,7 @@ public:
 private:
     std::string name;
     Header* header;
-    std::set<Tuple> tuples
+    std::set<Tuple> tuples;
 };
 
 #endif
