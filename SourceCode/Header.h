@@ -5,8 +5,8 @@
 
 class Header {
 public:
-    Header();
-    ~Header();
+    Header(std::vector<std::string> schema);
+    std::vector<std::string> getHeader() const;
 private:
     std::vector<std::string> attributes;
 };

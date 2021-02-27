@@ -5,8 +5,10 @@
 
 class Tuple {
 public:
-    Tuple();
-    ~Tuple();
+    Tuple() = default;
+    Tuple(std::vector<std::string> vals);
+    std::vector<std::string> getTuple() const;
+    bool operator< (const Tuple& other) const;
 private:
     std::vector<std::string> values;
 };

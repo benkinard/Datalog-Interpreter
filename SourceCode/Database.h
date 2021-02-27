@@ -1,15 +1,16 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 #include "Relation.h"
-#include <vector>
+#include <map>
 
 class Database {
 public:
-    Database();
+    Database() = default;
     ~Database();
-    void AddRelation(Relation);
+    void AddRelation(Relation* newRelation);
+    void PrintRelations();
 private:
-    std::vector<Relation> relations;
+    std::map<std::string, Relation*> relations;
 };
 
 #endif
