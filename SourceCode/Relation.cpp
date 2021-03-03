@@ -22,7 +22,7 @@ void Relation::AddTuple(Tuple newTuple) {
 std::string Relation::toString() {
     std::string finalString = name + '\n';
     for (Tuple t : tuples) {
-        for (int i = 0; i < header->getHeader().size(); i++) {
+        for (unsigned int i = 0; i < header->getHeader().size(); i++) {
             if (i != 0) {
                 finalString += ", ";
             } else {

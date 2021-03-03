@@ -4,6 +4,7 @@
 #include <map>
 
 class Database {
+    friend class Interpreter;
 public:
     Database() = default;
     ~Database();

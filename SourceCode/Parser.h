@@ -8,9 +8,9 @@
 
 class Parser {
 public:
-    Parser() = default;
+    Parser() : datalogProgram(new DatalogProgram()){};
     ~Parser() = default;
-    void Parse(std::vector<Token*> input);
+    DatalogProgram* Parse(std::vector<Token*> input);
 
 private:
     void ParseDatalogProgram(std::vector<Token*> input);
@@ -34,9 +34,9 @@ private:
     void Match(std::vector<Token*> input, TokenType reqToken);
     unsigned int currentIndex = 0;
 
-    DatalogProgram datalogProgram;
+    DatalogProgram* datalogProgram;
     std::vector<Parameter*> tempParameters;
-    Predicate* tempHeadPredicate{};
+    Predicate* tempHeadPredicate;
     std::vector<Predicate*> tempPredicates;
     std::vector<Parameter*> tempExpression;
     std::string tempOperator;

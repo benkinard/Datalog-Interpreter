@@ -4,14 +4,14 @@
 #include "PlainParameter.h"
 #include "Expression.h"
 
-void Parser::Parse(std::vector<Token *> input) {
+DatalogProgram* Parser::Parse(std::vector<Token *> input) {
     try {
         try {
             // Run input through Parser
             ParseDatalogProgram(input);
             std::cout << "Success!" << std::endl;
             // Print datalog program
-            std::cout << datalogProgram.toString();
+            std::cout << datalogProgram->toString();
         } catch (unsigned int index) {
             // Catch program that does not end with an EOF
             std::cout << "Failure!" << std::endl;
@@ -23,6 +23,7 @@ void Parser::Parse(std::vector<Token *> input) {
         std::cout << "Failure!" << std::endl << "  ";
         std::cout << error->toString() << std::endl;
     }
+    return datalogProgram;
 }
 
 void Parser::ParseDatalogProgram(std::vector<Token *> input) {
@@ -60,7 +61,7 @@ void Parser::ParseScheme(std::vector<Token *> input) {
     tempParameters.clear();
     Match(input, RIGHT_PAREN);
     // Add scheme object to datalog program
-    datalogProgram.AddScheme(schemeObject);
+    datalogProgram->AddScheme(schemeObject);
 }
 
 void Parser::ParseSchemeList(std::vector<Token *> input) {
@@ -87,7 +88,7 @@ void Parser::ParseFact(std::vector<Token *> input) {
     Match(input, STRING);
     auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
     // Add parameter to the set of domains and append it to tempParameters
-    datalogProgram.AddDomain(newPlainParameter->toString());
+    datalogProgram->AddDomain(newPlainParameter->toString());
     tempParameters.push_back(newPlainParameter);
     ParseStringList(input);
     // Add the parameters that were appended to tempParameters to the fact object
@@ -97,7 +98,7 @@ void Parser::ParseFact(std::vector<Token *> input) {
     Match(input, RIGHT_PAREN);
     Match(input, PERIOD);
     // Add fact object to datalog program
-    datalogProgram.AddFact(factObject);
+    datalogProgram->AddFact(factObject);
 }
 
 void Parser::ParseFactList(std::vector<Token *> input) {
@@ -132,7 +133,7 @@ void Parser::ParseRule(std::vector<Token *> input) {
     tempPredicates.clear();
     Match(input, PERIOD);
     // Add rule object to datalog program
-    datalogProgram.AddRule(ruleObject);
+    datalogProgram->AddRule(ruleObject);
 }
 
 void Parser::ParseRuleList(std::vector<Token *> input) {
@@ -158,7 +159,7 @@ void Parser::ParseQuery(std::vector<Token *> input) {
     tempPredicates.clear();
     Match(input, Q_MARK);
     // Add query object to datalog program
-    datalogProgram.AddQuery(queryObject);
+    datalogProgram->AddQuery(queryObject);
 }
 
 void Parser::ParseQueryList(std::vector<Token *> input) {
@@ -200,7 +201,7 @@ void Parser::ParseStringList(std::vector<Token *> input) {
             Match(input, COMMA);
             Match(input, STRING);
             auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
-            datalogProgram.AddDomain(newPlainParameter->toString());
+            datalogProgram->AddDomain(newPlainParameter->toString());
             tempParameters.push_back(newPlainParameter);
             ParseStringList(input);
         } else if (input.at(currentIndex)->getType() == RIGHT_PAREN) {

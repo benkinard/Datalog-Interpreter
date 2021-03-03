@@ -7,6 +7,7 @@
 #include "Rule.h"
 
 class DatalogProgram {
+    friend class Interpreter;
 public:
     DatalogProgram()= default;
     ~DatalogProgram();
