@@ -40,3 +40,18 @@ Interpreter::~Interpreter() {
     delete database;
     database = nullptr;
 }
+
+void Interpreter::evaluateQueries() {
+    for (unsigned int i = 0; i < program->queries.size(); i++) {
+        Relation* query = nullptr;
+        query = evaluatePredicate(program->queries.at(i));
+        query->toString();
+        delete query;
+        query = nullptr;
+    }
+}
+
+Relation* Interpreter::evaluatePredicate(const Predicate* p) {
+    Relation* remove = nullptr;     // REMOVE THIS
+    return remove;
+}

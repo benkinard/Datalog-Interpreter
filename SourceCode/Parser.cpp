@@ -51,7 +51,7 @@ void Parser::ParseScheme(std::vector<Token *> input) {
     schemeObject->SetID(input.at(currentIndex - 1)->getValue());
     Match(input, LEFT_PAREN);
     Match(input, ID);
-    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), false);
     // append parameter to temporary vector storing parameters for this scheme object
     tempParameters.push_back(newPlainParameter);
     ParseIdList(input);
@@ -86,7 +86,7 @@ void Parser::ParseFact(std::vector<Token *> input) {
     factObject->SetID(input.at(currentIndex - 1)->getValue());
     Match(input, LEFT_PAREN);
     Match(input, STRING);
-    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), true);
     // Add parameter to the set of domains and append it to tempParameters
     datalogProgram->AddDomain(newPlainParameter->toString());
     tempParameters.push_back(newPlainParameter);
@@ -182,7 +182,7 @@ void Parser::ParseIdList(std::vector<Token *> input) {
         if (input.at(currentIndex)->getType() == COMMA) {
             Match(input, COMMA);
             Match(input, ID);
-            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), false);
             tempParameters.push_back(newPlainParameter);
             ParseIdList(input);
         } else if (input.at(currentIndex)->getType() == RIGHT_PAREN) {
@@ -200,7 +200,7 @@ void Parser::ParseStringList(std::vector<Token *> input) {
         if (input.at(currentIndex)->getType() == COMMA) {
             Match(input, COMMA);
             Match(input, STRING);
-            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), true);
             datalogProgram->AddDomain(newPlainParameter->toString());
             tempParameters.push_back(newPlainParameter);
             ParseStringList(input);
@@ -220,7 +220,7 @@ void Parser::ParseHeadPredicate(std::vector<Token *> input) {
     headPredicateObject->SetID(input.at(currentIndex - 1)->getValue());
     Match(input, LEFT_PAREN);
     Match(input, ID);
-    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+    auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), false);
     tempParameters.push_back(newPlainParameter);
     ParseIdList(input);
     headPredicateObject->AddParameters(tempParameters);
@@ -262,11 +262,11 @@ void Parser::ParseParameter(std::vector<Token *> input) {
     if (currentIndex < input.size()) {
         if (input.at(currentIndex)->getType() == STRING) {
             Match(input, STRING);
-            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), true);
             tempParameters.push_back(newPlainParameter);
         } else if (input.at(currentIndex)->getType() == ID) {
             Match(input, ID);
-            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue());
+            auto newPlainParameter = new PlainParameter(input.at(currentIndex - 1)->getValue(), false);
             tempParameters.push_back(newPlainParameter);
         } else if (input.at(currentIndex)->getType() == LEFT_PAREN) {
             ParseExpression(input);

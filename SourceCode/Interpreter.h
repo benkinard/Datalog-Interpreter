@@ -7,6 +7,8 @@ class Interpreter {
 public:
     Interpreter(DatalogProgram* input);
     ~Interpreter();
+    void evaluateQueries();
+    Relation* evaluatePredicate(const Predicate* p);
 private:
     DatalogProgram* program;
     Database* database;

@@ -7,6 +7,8 @@ public:
     Parameter()= default;
     virtual ~Parameter() = default;
     virtual std::string toString() = 0;
+protected:
+    bool isConstant;
 };
 
 #endif
