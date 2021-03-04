@@ -53,24 +53,35 @@ void Interpreter::evaluateQueries() {
 }
 
 Relation* Interpreter::evaluatePredicate(const Predicate* p) {
+    // Find the relation in the DataBase that matches the name of the current query
     std::string name = p->id;
-    Relation* finalRel = nullptr;
+    Relation* dbRel = nullptr;
     std::map<std::string, int> variables;
     std::vector<std::string> variableOrder;
     for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
          itr != database->relations.end(); itr++) {
              if (itr->first == name) {
-                 finalRel = itr->second;
+                 dbRel = itr->second;
                  break;
              }
          }
+    // Create a copy of the relation from the DataBase so we don't overwrite it
+    Relation* finalRel = new Relation(dbRel->getName(), dbRel->getHeader());
+    for (Tuple t : dbRel->getTuples()) {
+        finalRel->AddTuple(t);
+    }
+    // Evaluate the Query
     for (unsigned int i = 0; i < p->parameters.size(); i++) {
         if (p->parameters.at(i)->isConstant) {  // This is a constant
-            // finalRel = finalRel->Select(i, p->parameter.at(i)->toString());
+            Relation* selectRel = finalRel->Select(i, p->parameters.at(i)->toString());
+            delete finalRel;
+            finalRel = selectRel;
         } else {    // This is a variable
             std::map<std::string, int>::iterator varItr = variables.find(p->parameters.at(i)->toString());
             if (varItr != variables.end()) {    // We've seen this variable before
-                // finalRel = finalRel->Select(varItr->second, i);
+                Relation* selectRel = finalRel->Select(varItr->second, i);
+                delete finalRel;
+                finalRel = selectRel;
             } else {    // We haven't seen this variable before
                 variables.insert(std::pair<std::string, int> (p->parameters.at(i)->toString(), i));
                 variableOrder.push_back(p->parameters.at(i)->toString());
