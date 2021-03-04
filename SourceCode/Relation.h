@@ -17,7 +17,7 @@ public:
     Relation* Select(int position, std::string value);
     Relation* Select(int position1, int position2);
     Relation* Project(std::vector<int> positions);
-    // Relation* Rename(std::vector<std::string> names);
+    Relation* Rename(Header* newHeader);
     std::string toString();
 private:
     std::string name;

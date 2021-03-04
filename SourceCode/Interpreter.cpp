@@ -57,7 +57,7 @@ Relation* Interpreter::evaluatePredicate(const Predicate* p) {
     std::string name = p->id;
     Relation* dbRel = nullptr;
     std::map<std::string, int> variables;
-    std::vector<std::string> variableOrder;
+    std::vector<std::string> varNames;
     for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
          itr != database->relations.end(); itr++) {
              if (itr->first == name) {
@@ -84,19 +84,25 @@ Relation* Interpreter::evaluatePredicate(const Predicate* p) {
                 finalRel = selectRel;
             } else {    // We haven't seen this variable before
                 variables.insert(std::pair<std::string, int> (p->parameters.at(i)->toString(), i));
-                variableOrder.push_back(p->parameters.at(i)->toString());
+                varNames.push_back(p->parameters.at(i)->toString());
             }
         }
     }
     // Project the columns that had variables in the query; Exclude the constants
     std::vector<int> varPos;
-    for (unsigned int j = 0; j < variableOrder.size(); j++) {
-        std::map<std::string, int>::iterator itr = variables.find(variableOrder.at(j));
+    for (unsigned int j = 0; j < varNames.size(); j++) {
+        std::map<std::string, int>::iterator itr = variables.find(varNames.at(j));
         varPos.push_back(itr->second);
     }
     Relation* projRel = finalRel->Project(varPos);
     delete finalRel;
     finalRel = projRel;
-    // finalRel = finalRel->Rename();
+    // Create new Header with variable names
+    // Pass new Header into Rename function
+    Header* varHeader = new Header(varNames);
+    Relation* renameRel = finalRel->Rename(varHeader);
+    delete finalRel;
+    finalRel = renameRel;
+    
     return finalRel;
 }

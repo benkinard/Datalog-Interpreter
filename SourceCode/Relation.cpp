@@ -75,6 +75,11 @@ Relation* Relation::Project(std::vector<int> positions) {
     return newRel;
 }
 
+Relation* Relation::Rename(Header* newHeader) {
+    Relation* newRel = new Relation(this->name, newHeader);
+    return newRel;
+}
+
 std::string Relation::toString() {
     std::string finalString = name + '\n';
     for (Tuple t : tuples) {
