@@ -88,8 +88,15 @@ Relation* Interpreter::evaluatePredicate(const Predicate* p) {
             }
         }
     }
-    
-    // finalRel = finalRel->Project();
+    // Project the columns that had variables in the query; Exclude the constants
+    std::vector<int> varPos;
+    for (unsigned int j = 0; j < variableOrder.size(); j++) {
+        std::map<std::string, int>::iterator itr = variables.find(variableOrder.at(j));
+        varPos.push_back(itr->second);
+    }
+    Relation* projRel = finalRel->Project(varPos);
+    delete finalRel;
+    finalRel = projRel;
     // finalRel = finalRel->Rename();
     return finalRel;
 }

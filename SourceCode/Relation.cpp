@@ -28,7 +28,10 @@ void Relation::AddTuple(Tuple newTuple) {
 }
 
 Relation* Relation::Select(int position, std::string value) {
+    // Create new Relation with same name and same header
     Relation* newRel = new Relation(this->name, this->header);
+    // In this new Relation, only include Tuples with values that match
+    // the given value for the given position/column
     for (Tuple t : tuples) {
         if (t.getTuple().at(position) == value) {
             newRel->AddTuple(t);
@@ -38,11 +41,36 @@ Relation* Relation::Select(int position, std::string value) {
 }
 
 Relation* Relation::Select(int position1, int position2) {
+    // Create new Relation with same name and same header
     Relation* newRel = new Relation(this->name, this->header);
+    // In this new Relation, only include the Tuples with matching values
+    // at the given positions
     for (Tuple t : tuples) {
         if (t.getTuple().at(position1) == t.getTuple().at(position2)) {
             newRel->AddTuple(t);
         }
+    }
+    return newRel;
+}
+
+Relation* Relation::Project(std::vector<int> positions) {
+    // Create header for projected columns
+    std::vector<std::string> projCols;
+    for (int i = 0; i < positions.size(); i++) {
+        projCols.push_back(this->header->getHeader().at(positions.at(i)));
+    }
+    Header* newHeader = new Header(projCols);
+    // Create new Relation with same name and new header
+    Relation* newRel = new Relation(this->name, newHeader);
+    // Create new Tuples that only include the projected columns
+    // Add these new Tuples to the new Relation
+    for (Tuple t : tuples) {
+        std::vector<std::string> values;
+        for (int k = 0; k < positions.size(); k++) {
+            values.push_back(t.getTuple().at(positions.at(k)));
+        }
+        Tuple nt(values);
+        newRel->AddTuple(nt);
     }
     return newRel;
 }
