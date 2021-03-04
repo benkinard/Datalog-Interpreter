@@ -3,6 +3,7 @@
 #include <string>
 
 class Parameter {
+    friend class Interpreter;
 public:
     Parameter()= default;
     virtual ~Parameter() = default;

@@ -14,11 +14,11 @@ Interpreter::Interpreter(DatalogProgram* input) : program(input), database(new D
     }
     
     // Add tuples to the previously created relations
-    for (unsigned int i = 0; i < program->facts.size(); i++) {
-        std::string name = program->facts.at(i)->id;
+    for (unsigned int k = 0; k < program->facts.size(); k++) {
+        std::string name = program->facts.at(k)->id;
         std::vector<std::string> values;
-        for (unsigned int j = 0; j < program->facts.at(i)->parameters.size(); j++) {
-            values.push_back(program->facts.at(i)->parameters.at(j)->toString());
+        for (unsigned int m = 0; m < program->facts.at(k)->parameters.size(); m++) {
+            values.push_back(program->facts.at(k)->parameters.at(m)->toString());
         }
         Tuple tuple(values);
         for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
@@ -45,6 +45,7 @@ void Interpreter::evaluateQueries() {
     for (unsigned int i = 0; i < program->queries.size(); i++) {
         Relation* query = nullptr;
         query = evaluatePredicate(program->queries.at(i));
+        // std::cout << [INSERT QUERY HERE] << "? " << [YES OR NO(n)] << std::endl;
         query->toString();
         delete query;
         query = nullptr;
@@ -52,6 +53,32 @@ void Interpreter::evaluateQueries() {
 }
 
 Relation* Interpreter::evaluatePredicate(const Predicate* p) {
-    Relation* remove = nullptr;     // REMOVE THIS
-    return remove;
+    std::string name = p->id;
+    Relation* finalRel = nullptr;
+    std::map<std::string, int> variables;
+    std::vector<std::string> variableOrder;
+    for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
+         itr != database->relations.end(); itr++) {
+             if (itr->first == name) {
+                 finalRel = itr->second;
+                 break;
+             }
+         }
+    for (unsigned int i = 0; i < p->parameters.size(); i++) {
+        if (p->parameters.at(i)->isConstant) {  // This is a constant
+            // finalRel = finalRel->Select(i, p->parameter.at(i)->toString());
+        } else {    // This is a variable
+            std::map<std::string, int>::iterator varItr = variables.find(p->parameters.at(i)->toString());
+            if (varItr != variables.end()) {    // We've seen this variable before
+                // finalRel = finalRel->Select(varItr->second, i);
+            } else {    // We haven't seen this variable before
+                variables.insert(std::pair<std::string, int> (p->parameters.at(i)->toString(), i));
+                variableOrder.push_back(p->parameters.at(i)->toString());
+            }
+        }
+    }
+    
+    // finalRel = finalRel->Project();
+    // finalRel = finalRel->Rename();
+    return finalRel;
 }
