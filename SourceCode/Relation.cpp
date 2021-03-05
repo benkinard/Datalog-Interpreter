@@ -1,9 +1,6 @@
 #include "Relation.h"
 
-Relation::Relation(std::string name, Header* schema) {
-    this->name = name;
-    header = schema;
-}
+Relation::Relation(std::string title, Header* schema) : name(title), header(schema) {}
 
 Relation::~Relation() {
     delete header;
@@ -29,7 +26,9 @@ void Relation::AddTuple(Tuple newTuple) {
 
 Relation* Relation::Select(int position, std::string value) {
     // Create new Relation with same name and same header
-    Relation* newRel = new Relation(this->name, this->header);
+    std::vector<std::string> cpHeader(this->header->getHeader());
+    Header* newHeader = new Header(cpHeader);
+    Relation* newRel = new Relation(this->name, newHeader);
     // In this new Relation, only include Tuples with values that match
     // the given value for the given position/column
     for (Tuple t : tuples) {
@@ -42,7 +41,9 @@ Relation* Relation::Select(int position, std::string value) {
 
 Relation* Relation::Select(int position1, int position2) {
     // Create new Relation with same name and same header
-    Relation* newRel = new Relation(this->name, this->header);
+    std::vector<std::string> cpHeader(this->header->getHeader());
+    Header* newHeader = new Header(cpHeader);
+    Relation* newRel = new Relation(this->name, newHeader);
     // In this new Relation, only include the Tuples with matching values
     // at the given positions
     for (Tuple t : tuples) {
@@ -56,7 +57,7 @@ Relation* Relation::Select(int position1, int position2) {
 Relation* Relation::Project(std::vector<int> positions) {
     // Create header for projected columns
     std::vector<std::string> projCols;
-    for (int i = 0; i < positions.size(); i++) {
+    for (unsigned int i = 0; i < positions.size(); i++) {
         projCols.push_back(this->header->getHeader().at(positions.at(i)));
     }
     Header* newHeader = new Header(projCols);
@@ -66,7 +67,7 @@ Relation* Relation::Project(std::vector<int> positions) {
     // Add these new Tuples to the new Relation
     for (Tuple t : tuples) {
         std::vector<std::string> values;
-        for (int k = 0; k < positions.size(); k++) {
+        for (unsigned int k = 0; k < positions.size(); k++) {
             values.push_back(t.getTuple().at(positions.at(k)));
         }
         Tuple nt(values);
@@ -77,11 +78,14 @@ Relation* Relation::Project(std::vector<int> positions) {
 
 Relation* Relation::Rename(Header* newHeader) {
     Relation* newRel = new Relation(this->name, newHeader);
+    for (Tuple t : tuples) {
+        newRel->AddTuple(t);
+    }
     return newRel;
 }
 
 std::string Relation::toString() {
-    std::string finalString = name + '\n';
+    std::string finalString;
     for (Tuple t : tuples) {
         for (unsigned int i = 0; i < header->getHeader().size(); i++) {
             if (i != 0) {
@@ -89,7 +93,7 @@ std::string Relation::toString() {
             } else {
                 finalString += "  ";
             }
-            finalString += header->getHeader().at(i) + "='" + t.getTuple().at(i) + "'";
+            finalString += header->getHeader().at(i) + "=" + t.getTuple().at(i);
         }
         finalString += '\n';
     }

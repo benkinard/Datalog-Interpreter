@@ -25,12 +25,15 @@ int main(int argc, char* argv[]) {
     Lexer DatalogLexer;
     DatalogLexer.Run(fileInput);
 
-    // Create Datalog Parser, pass it the vector of tokens generated above, and parse the tokens
+    // Create Datalog Parser and pass it the vector of tokens generated above
     Parser DatalogParser;
     std::vector<Token*> fileTokens = DatalogLexer.getTokens();
 
-    // TEST INTERPRETER
-    Interpreter testInterpreter(DatalogParser.Parse(fileTokens));
+    // Parse the tokens and pass the resulting DatalogProgram to the Interpreter
+    Interpreter DatalogInterpreter(DatalogParser.Parse(fileTokens));
+
+    // Evaluate the Queries from the DatalogProgram
+    DatalogInterpreter.evaluateQueries();
 
     // Deallocate memory for the Lexer and Interpreter
     return 0;

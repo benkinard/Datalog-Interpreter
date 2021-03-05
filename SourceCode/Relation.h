@@ -8,7 +8,7 @@
 
 class Relation {
 public:
-    Relation(std::string name, Header* schema);
+    Relation(std::string title, Header* schema);
     ~Relation();
     std::string getName() const;
     Header* getHeader() const;

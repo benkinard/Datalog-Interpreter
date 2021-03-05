@@ -8,8 +8,8 @@ public:
     Interpreter(DatalogProgram* input);
     ~Interpreter();
     void evaluateQueries();
-    Relation* evaluatePredicate(const Predicate* p);
 private:
+    Relation* evaluatePredicate(const Predicate* p);
     DatalogProgram* program;
     Database* database;
 };

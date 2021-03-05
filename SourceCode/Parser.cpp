@@ -9,9 +9,6 @@ DatalogProgram* Parser::Parse(std::vector<Token *> input) {
         try {
             // Run input through Parser
             ParseDatalogProgram(input);
-            std::cout << "Success!" << std::endl;
-            // Print datalog program
-            std::cout << datalogProgram->toString();
         } catch (unsigned int index) {
             // Catch program that does not end with an EOF
             std::cout << "Failure!" << std::endl;
