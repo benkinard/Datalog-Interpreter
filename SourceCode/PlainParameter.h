@@ -5,7 +5,7 @@
 
 class PlainParameter : public Parameter {
 public:
-    PlainParameter(std::string value);
+    PlainParameter(std::string value, bool constant);
     ~PlainParameter() = default;
     std::string toString();
 

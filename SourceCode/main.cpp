@@ -2,6 +2,9 @@
 #include <fstream>
 #include "Lexer.h"
 #include "Parser.h"
+#include "Interpreter.h"
+// REMOVE THIS LATER
+#include "DatalogProgram.h"
 
 int main(int argc, char* argv[]) {
     std::string fileInput;
@@ -19,16 +22,19 @@ int main(int argc, char* argv[]) {
     inFS.close();
 
     // Create Datalog Lexer and pass it the string of the file contents
-    Lexer* DatalogLexer = new Lexer();
-    DatalogLexer->Run(fileInput);
+    Lexer DatalogLexer;
+    DatalogLexer.Run(fileInput);
 
-    // Create Datalog Parser, pass it the vector of tokens generated above, and parse the tokens
-    Parser* DatalogParser = new Parser();
-    std::vector<Token*> fileTokens = DatalogLexer->getTokens();
-    DatalogParser->Parse(fileTokens);
+    // Create Datalog Parser and pass it the vector of tokens generated above
+    Parser DatalogParser;
+    std::vector<Token*> fileTokens = DatalogLexer.getTokens();
 
-    // Deallocate memory for the Lexer and Parser
-    delete DatalogLexer;
-    delete DatalogParser;
+    // Parse the tokens and pass the resulting DatalogProgram to the Interpreter
+    Interpreter DatalogInterpreter(DatalogParser.Parse(fileTokens));
+
+    // Evaluate the Queries from the DatalogProgram
+    DatalogInterpreter.evaluateQueries();
+
+    // Deallocate memory for the Lexer and Interpreter
     return 0;
 }

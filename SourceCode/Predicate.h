@@ -5,6 +5,7 @@
 #include "Parameter.h"
 
 class Predicate {
+    friend class Interpreter;
 public:
     Predicate() = default;
     ~Predicate();
