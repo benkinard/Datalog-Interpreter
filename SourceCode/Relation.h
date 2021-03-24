@@ -18,6 +18,7 @@ public:
     Relation* Select(int position1, int position2);
     Relation* Project(std::vector<int> positions);
     Relation* Rename(Header* newHeader);
+    void UnionOp(Relation* ruleEval);
     std::string toString();
 private:
     std::string name;

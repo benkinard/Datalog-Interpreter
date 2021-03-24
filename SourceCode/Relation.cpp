@@ -1,4 +1,5 @@
 #include "Relation.h"
+#include <iostream>
 
 Relation::Relation(std::string title, Header* schema) : name(title), header(schema) {}
 
@@ -82,6 +83,23 @@ Relation* Relation::Rename(Header* newHeader) {
         newRel->AddTuple(t);
     }
     return newRel;
+}
+
+void Relation::UnionOp(Relation* ruleEval) {
+    for (Tuple t : ruleEval->getTuples()) {
+        if (tuples.insert(t).second) {  // If tuple is new addition to relation, print it out
+            std::string finalString;
+            for (unsigned int i = 0; i < header->getHeader().size(); i++) {
+                if (i != 0) {
+                    finalString += ", ";
+                } else {
+                    finalString += "  ";
+                }
+                finalString += header->getHeader().at(i) + "=" + t.getTuple().at(i);
+            }
+            std::cout << finalString << std::endl;
+        }
+    }
 }
 
 std::string Relation::toString() {
