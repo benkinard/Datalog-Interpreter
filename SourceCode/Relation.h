@@ -20,7 +20,7 @@ public:
     Relation* Project(std::vector<int> positions);
     Relation* Rename(Header* newHeader);
     Relation* Join(Relation* otherRelation);
-    void UnionOp(Relation* ruleEval);
+    bool UnionOp(Relation* ruleEval);
     std::string toString();
 private:
     std::string name;

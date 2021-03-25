@@ -1,5 +1,6 @@
 #include "Interpreter.h"
 #include <iostream>
+#include <list>
 
 Interpreter::Interpreter(DatalogProgram* input) : program(input), database(new Database()) {
     // Add empty relations with their name and header
@@ -39,7 +40,92 @@ Interpreter::~Interpreter() {
     database = nullptr;
 }
 
+void Interpreter::evaluateRules() {
+    std::cout << "Rule Evaluation" << std::endl;
+    bool dbUpdated = true;
+    int rulePasses = 0;
+    // Fixed-Point Algorithm
+    while (dbUpdated) {
+        dbUpdated = false;
+        rulePasses++;
+        // Loop through each rule in the DatalogProgram
+        for (unsigned int i = 0; i < program->rules.size(); i++) {
+            std::cout << program->rules.at(i)->toString() << "." << std::endl;
+            if (evaluateRule(program->rules.at(i))) {
+                dbUpdated = true;
+            }
+        }
+    }
+    std::cout << std::endl << "Schemes populated after " << rulePasses << " passes through the Rules.";
+    std::cout << std::endl << std::endl;
+}
+
+bool Interpreter::evaluateRule(const Rule* r) {
+    // *********************** Evaluate Predicates ***********************************
+    // Create a list to store the relations that result from each body predicate
+    std::list<Relation*> resultingRelations;
+    // Loop through each body predicate, evaluate it, and store the relation in the list
+    for (unsigned int i = 0; i < r->predicates.size(); i++) {
+        resultingRelations.push_back(evaluatePredicate(r->predicates.at(i)));
+    }
+
+    // *************************** Join Relations *************************************
+    // Perform n-1 joins for the n relations in the list
+    Relation* joinRel = resultingRelations.front();
+    resultingRelations.pop_front();
+    while (!resultingRelations.empty()) {
+        Relation* tempRel = joinRel->Join(resultingRelations.front());
+        delete joinRel;
+        joinRel = tempRel;
+        resultingRelations.pop_front();
+    }
+
+    // ********************** Project Head Predicate Columns **************************
+    // Find the column positions for the appropriate columns in the head predicate
+    std::vector<int> projCols;
+    for (unsigned int j = 0; j < r->headPredicate->parameters.size(); j++) {
+        for (unsigned int k = 0; k < joinRel->getHeader()->getHeader().size(); k++) {
+            if (r->headPredicate->parameters.at(j)->toString() == joinRel->getHeader()->getHeader().at(k)) {
+                projCols.push_back(k);
+                break;
+            }
+        }
+    }
+    // Project the columns of the head predicate using the vector created above
+    Relation* projRel = joinRel->Project(projCols);
+    delete joinRel;
+
+    // ************************ Rename Header to Match Database ***********************
+    // Create vector with appropriate values to initialize the new Header with
+    std::vector<std::string> dbAttributes;
+    for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
+        itr != database->relations.end(); itr++) {
+            if (itr->first == r->headPredicate->id) {
+                dbAttributes = itr->second->getHeader()->getHeader();
+                break;
+            }
+    }
+    // Create new Header* object to pass in to Rename method of projRel
+    auto newHeader = new Header(dbAttributes);
+    // Pass in new Header to Rename and store returning Relation
+    Relation* renameRel = projRel->Rename(newHeader);
+    delete projRel;
+
+    // ********************** Union with Relation in Database *************************
+    bool tuplesAdded = false;
+    for (std::map<std::string, Relation*>::iterator itr = database->relations.begin();
+        itr != database->relations.end(); itr++) {
+            if (itr->first == r->headPredicate->id) {
+                tuplesAdded = itr->second->UnionOp(renameRel);
+                delete renameRel;
+                break;
+            }
+    }
+    return tuplesAdded;
+}
+
 void Interpreter::evaluateQueries() {
+    std::cout << "Query Evaluation" << std::endl;
     // Loop through each query in the DatalogProgram
     for (unsigned int i = 0; i < program->queries.size(); i++) {
         // Pass first query to evaluatePredicate and store result in a Relation*
@@ -95,7 +181,7 @@ Relation* Interpreter::evaluatePredicate(const Predicate* p) {
         finalRel->AddTuple(t);
     }
 
-    // Evaluate the Query
+    // Evaluate the Predicate
     for (unsigned int i = 0; i < p->parameters.size(); i++) {
         if (p->parameters.at(i)->isConstant) {  // This is a constant
             Relation* selectRel = finalRel->Select(i, p->parameters.at(i)->toString());

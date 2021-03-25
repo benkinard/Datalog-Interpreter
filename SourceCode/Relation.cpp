@@ -117,9 +117,11 @@ Relation* Relation::Join(Relation* otherRelation) {
     return result;
 }
 
-void Relation::UnionOp(Relation* ruleEval) {
+bool Relation::UnionOp(Relation* ruleEval) {
+    bool anyNewTuples = false;
     for (Tuple t : ruleEval->getTuples()) {
         if (tuples.insert(t).second) {  // If tuple is new addition to relation, print it out
+            anyNewTuples = true;
             std::string finalString;
             for (unsigned int i = 0; i < header->getHeader().size(); i++) {
                 if (i != 0) {
@@ -132,6 +134,7 @@ void Relation::UnionOp(Relation* ruleEval) {
             std::cout << finalString << std::endl;
         }
     }
+    return anyNewTuples;
 }
 
 std::string Relation::toString() {
