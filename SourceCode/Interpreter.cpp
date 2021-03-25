@@ -77,6 +77,8 @@ bool Interpreter::evaluateRule(const Rule* r) {
         Relation* tempRel = joinRel->Join(resultingRelations.front());
         delete joinRel;
         joinRel = tempRel;
+        tempRel = resultingRelations.front();
+        delete tempRel;
         resultingRelations.pop_front();
     }
 
