@@ -32,9 +32,11 @@ int main(int argc, char* argv[]) {
     // Parse the tokens and pass the resulting DatalogProgram to the Interpreter
     Interpreter DatalogInterpreter(DatalogParser.Parse(fileTokens));
 
+    // Evaluate the Rules from the DatalogProgram
+    DatalogInterpreter.evaluateRules();
+
     // Evaluate the Queries from the DatalogProgram
     DatalogInterpreter.evaluateQueries();
 
-    // Deallocate memory for the Lexer and Interpreter
     return 0;
 }

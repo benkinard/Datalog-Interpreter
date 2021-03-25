@@ -5,6 +5,7 @@
 #include "Predicate.h"
 
 class Rule {
+    friend class Interpreter;
 public:
     Rule() = default;
     ~Rule();
