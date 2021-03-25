@@ -7,65 +7,119 @@
 
 int main() {
     std::vector<std::string> header;
-    header.push_back("X");
-    header.push_back("Y");
-    header.push_back("Z");
+    header.push_back("cat");
+    header.push_back("dog");
+    header.push_back("fish");
     // Create "database" relation
     Header* hDB = new Header(header);
-    Relation* rDB = new Relation("Test", hDB);
+    Relation* rDB = new Relation("alpha", hDB);
 
     // Create tuples and add to "database" relation
     std::vector<std::string> tuplesDB;
-    tuplesDB.push_back("A");
-    tuplesDB.push_back("B");
-    tuplesDB.push_back("C");
+    tuplesDB.push_back("1");
+    tuplesDB.push_back("2");
+    tuplesDB.push_back("5");
     Tuple tuple1(tuplesDB);
     rDB->AddTuple(tuple1);
     tuplesDB.clear();
 
     tuplesDB.push_back("1");
-    tuplesDB.push_back("2");
-    tuplesDB.push_back("3");
+    tuplesDB.push_back("4");
+    tuplesDB.push_back("1");
     Tuple tuple2(tuplesDB);
     rDB->AddTuple(tuple2);
     tuplesDB.clear();
 
-    std::cout << "Initial database relation" << std::endl;
+    tuplesDB.push_back("2");
+    tuplesDB.push_back("3");
+    tuplesDB.push_back("2");
+    Tuple tuple3(tuplesDB);
+    rDB->AddTuple(tuple3);
+    tuplesDB.clear();
+
+    tuplesDB.push_back("3");
+    tuplesDB.push_back("3");
+    tuplesDB.push_back("2");
+    Tuple tuple4(tuplesDB);
+    rDB->AddTuple(tuple4);
+    tuplesDB.clear();
+
+    tuplesDB.push_back("6");
+    tuplesDB.push_back("7");
+    tuplesDB.push_back("4");
+    Tuple tuple5(tuplesDB);
+    rDB->AddTuple(tuple5);
+    tuplesDB.clear();
+
+    std::cout << "Relation alpha" << std::endl;
     std::cout << rDB->toString() << std::endl;
 
     // Create "rule evaluation" relation
     header.clear();
-    header.push_back("D");
-    header.push_back("E");
-    header.push_back("F");
+    header.push_back("cat");
+    header.push_back("fish");
+    header.push_back("bird");
+    header.push_back("bunny");
     Header* hRE = new Header(header);
-    Relation* rRE = new Relation("Test", hRE);
+    Relation* rRE = new Relation("beta", hRE);
 
     // Create tuples and add to "rule evaluation" relation
     std::vector<std::string> tuplesRE;
-    tuplesRE.push_back("A");
-    tuplesRE.push_back("B");
-    tuplesRE.push_back("C");
-    Tuple tuple3(tuplesRE);
-    rRE->AddTuple(tuple3);
+    tuplesRE.push_back("3");
+    tuplesRE.push_back("4");
+    tuplesRE.push_back("2");
+    tuplesRE.push_back("4");
+    Tuple tuple6(tuplesRE);
+    rRE->AddTuple(tuple6);
+    tuplesRE.clear();
+
+    tuplesRE.push_back("6");
+    tuplesRE.push_back("4");
+    tuplesRE.push_back("9");
+    tuplesRE.push_back("2");
+    Tuple tuple7(tuplesRE);
+    rRE->AddTuple(tuple7);
     tuplesRE.clear();
 
     tuplesRE.push_back("4");
-    tuplesRE.push_back("5");
-    tuplesRE.push_back("6");
-    Tuple tuple4(tuplesRE);
-    rRE->AddTuple(tuple4);
+    tuplesRE.push_back("3");
+    tuplesRE.push_back("2");
+    tuplesRE.push_back("7");
+    Tuple tuple8(tuplesRE);
+    rRE->AddTuple(tuple8);
     tuplesRE.clear();
 
-    std::cout << "Rule evaluation relation" << std::endl;
+    tuplesRE.push_back("1");
+    tuplesRE.push_back("5");
+    tuplesRE.push_back("2");
+    tuplesRE.push_back("4");
+    Tuple tuple9(tuplesRE);
+    rRE->AddTuple(tuple9);
+    tuplesRE.clear();
+
+    tuplesRE.push_back("1");
+    tuplesRE.push_back("5");
+    tuplesRE.push_back("8");
+    tuplesRE.push_back("3");
+    Tuple tuple10(tuplesRE);
+    rRE->AddTuple(tuple10);
+    tuplesRE.clear();
+
+    std::cout << "Relation beta" << std::endl;
     std::cout << rRE->toString() << std::endl;
 
-    // Test Union Operator Method
-    std::cout << "Performing Union" << std::endl;
-    rDB->UnionOp(rRE);
+    // Test Join Method
+    std::cout << "Performing Join" << std::endl;
+    Relation* joinedRel = rDB->Join(rRE);
 
-    std::cout << "Database Relation following Union" << std::endl;
+    std::cout << "Alpha following Join" << std::endl;
     std::cout << rDB->toString() << std::endl;
+
+    std::cout << "Beta following Join" << std::endl;
+    std::cout << rRE->toString() << std::endl;
+
+    std::cout << "Joined Relation following Join" << std::endl;
+    std::cout << joinedRel->toString() << std::endl;
 
     return 0;
 }
