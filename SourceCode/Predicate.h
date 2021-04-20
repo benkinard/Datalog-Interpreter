@@ -6,6 +6,7 @@
 
 class Predicate {
     friend class Interpreter;
+    friend class Graph;
 public:
     Predicate() = default;
     ~Predicate();

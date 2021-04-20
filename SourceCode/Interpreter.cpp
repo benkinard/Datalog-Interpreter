@@ -41,6 +41,14 @@ Interpreter::~Interpreter() {
 }
 
 void Interpreter::evaluateRules() {
+    // Build the Dependency Graph
+    Graph depend;
+    depend.Build(program->rules);
+
+    // Build the Reverse Dependency Graph
+    Graph reverse;
+    reverse.Reverse(depend.edges);
+    // --------------------- Old Rule Evaluation -----------------------------------
     std::cout << "Rule Evaluation" << std::endl;
     bool dbUpdated = true;
     int rulePasses = 0;
