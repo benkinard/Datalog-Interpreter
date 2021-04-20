@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <iostream>
 
 Graph::Graph() {}
 
@@ -18,20 +19,64 @@ void Graph::Build(std::vector<Rule*> rules) {
         }
         edges.insert(std::pair<int, std::set<int> > (i, adjacent));
         adjacent.clear();
+        visited.insert(std::pair<int, bool> (i, false));
     }
 }
 
 void Graph::Reverse(std::map<int, std::set<int> > dependency) {
-    for (std::map<int, std::set<int> >::iterator itrOut; itrOut != dependency.end(); itrOut++) {
+    for (std::map<int, std::set<int> >::iterator itrOut = dependency.begin(); itrOut != dependency.end(); itrOut++) {
         std::set<int> neighbors;
-        for (std::map<int, std::set<int> >::iterator itrIn; itrIn != dependency.end(); itrIn++) {
-            for (int i : itrIn->second) {
-                if (itrOut->first == i) {
-                    neighbors.insert(itrIn->first);
+        for (std::map<int, std::set<int> >::iterator itrIn = dependency.begin(); itrIn != dependency.end(); itrIn++) {
+            if (!(itrIn->second.empty())) {
+                for (int i : itrIn->second) {
+                    if (itrOut->first == i) {
+                        neighbors.insert(itrIn->first);
+                    }
                 }
             }
         }
         edges.insert(std::pair<int, std::set<int> > (itrOut->first, neighbors));
         neighbors.clear();
+        visited.insert(std::pair<int, bool> (itrOut->first, false));
+    }
+}
+
+void Graph::dfs(int rule) {
+    // Mark this rule as being visited
+    std::map<int, bool>::iterator vst;
+    vst = visited.find(rule);
+    vst->second = true;
+
+    // Loop through adjacent rules
+    std::map<int, std::set<int> >::iterator edg;
+    edg = edges.find(rule);
+    if (!(edg->second.empty())) {
+        for (int i : edg->second) {
+            vst = visited.find(i);
+            // If this edge has not been visited then run DFS on it
+            if (vst->second == false) {
+                dfs(i);
+            }
+        }
+    }
+    postorder.push(rule);
+}
+
+void Graph::Print() const {
+    for (auto map : edges) {
+        std::cout << "R" << map.first << ":";
+        if (!(map.second.empty())) {
+            for (int i : map.second) {
+                std::cout << " R" << i;
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+void Graph::ReversePostorder() {
+    while (!postorder.empty()) {
+        std::cout << "R" << postorder.top() << " ";
+        postorder.pop();
     }
 }

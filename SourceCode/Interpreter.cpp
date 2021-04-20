@@ -44,10 +44,23 @@ void Interpreter::evaluateRules() {
     // Build the Dependency Graph
     Graph depend;
     depend.Build(program->rules);
+    // TEST
+    // std::cout << "This is the Dependency Graph" << std::endl;
+    // depend.Print();
 
     // Build the Reverse Dependency Graph
     Graph reverse;
     reverse.Reverse(depend.edges);
+    // TEST
+    // std::cout << "This is the Reverse Dependency Graph" << std::endl;
+    // reverse.Print();
+
+    // Run DFS on the Reverse Dependency Graph
+    reverse.dfs(0);
+    // Print the Reverse Postorder
+    std::cout << "This is the Reverse Postorder from the Reverse Dependency Graph" << std::endl;
+    reverse.ReversePostorder();
+    std::cout << std::endl;
     // --------------------- Old Rule Evaluation -----------------------------------
     std::cout << "Rule Evaluation" << std::endl;
     bool dbUpdated = true;
