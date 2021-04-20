@@ -13,15 +13,17 @@ public:
     void Build(std::vector<Rule*> rules);
     void Reverse(std::map<int, std::set<int> > dependency);
     void dfs(int rule);
-    // Tree dfs();
-    std::stack<int> dfsForest();
-    // Forest dfsForest();
+    void dfsSCC(int rule);
+    void dfsForest();
+    void dfsForestSCC(std::stack<int> dfsOrder);
     void Print() const;
     void ReversePostorder();
 private:
     std::map<int, std::set<int> > edges;
     std::map<int, bool> visited;
     std::stack<int> postorder;
+    std::vector<std::set<int> > sccs;
+    std::set<int> tempSCC;
 };
 
 #endif

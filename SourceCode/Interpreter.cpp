@@ -55,12 +55,24 @@ void Interpreter::evaluateRules() {
     // std::cout << "This is the Reverse Dependency Graph" << std::endl;
     // reverse.Print();
 
-    // Run DFS on the Reverse Dependency Graph
-    reverse.dfs(0);
-    // Print the Reverse Postorder
-    std::cout << "This is the Reverse Postorder from the Reverse Dependency Graph" << std::endl;
-    reverse.ReversePostorder();
-    std::cout << std::endl;
+    // Run DFS Forest on the Reverse Dependency Graph
+    reverse.dfsForest();
+    // TEST: Print the Reverse Postorder
+    // std::cout << "This is the Reverse Postorder from the Reverse Dependency Graph" << std::endl;
+    // reverse.ReversePostorder();
+    // std::cout << std::endl;
+
+    // Run DFS Forest on the Dependency Graph in the Reverse Postorder found above
+    depend.dfsForestSCC(reverse.postorder);
+    // TEST: Print the SCCs
+    // std::cout << "TEST: " << depend.sccs.size() << std::endl;
+    // for (unsigned int i = 0; i < depend.sccs.size(); i++) {
+    //     std::cout << "SCC:";
+    //     for (auto rule : depend.sccs.at(i)) {
+    //         std::cout << " R" << rule;
+    //     }
+    //     std::cout << std::endl;
+    // }
     // --------------------- Old Rule Evaluation -----------------------------------
     std::cout << "Rule Evaluation" << std::endl;
     bool dbUpdated = true;

@@ -62,6 +62,42 @@ void Graph::dfs(int rule) {
     postorder.push(rule);
 }
 
+void Graph::dfsSCC(int rule) {
+    // Mark this rule as being visited
+    visited.at(rule) = true;
+    
+    // Loop through the adjacent rules
+    if (!(edges.at(rule).empty())) {
+        for (int i : edges.at(rule)) {
+            // If this edge has not been visited then run DFS on it
+            if (!visited.at(i)) {
+                dfsSCC(i);
+            }
+        }
+    }
+    tempSCC.insert(rule);
+}
+
+void Graph::dfsForest() {
+    for (auto map : edges) {
+        if (visited.at(map.first) == false) {
+            dfs(map.first);
+        }
+    }
+}
+
+void Graph::dfsForestSCC(std::stack<int> dfsOrder) {
+    postorder = dfsOrder;
+    while (!postorder.empty()) {
+        if (visited.at(postorder.top()) == false) {
+            dfsSCC(postorder.top());
+            sccs.push_back(tempSCC);
+            tempSCC.clear();
+        }
+        postorder.pop();
+    }
+}
+
 void Graph::Print() const {
     for (auto map : edges) {
         std::cout << "R" << map.first << ":";
