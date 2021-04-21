@@ -6,6 +6,7 @@
 
 class Rule {
     friend class Interpreter;
+    friend class Graph;
 public:
     Rule() = default;
     ~Rule();
