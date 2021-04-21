@@ -102,8 +102,13 @@ void Graph::Print() const {
     for (auto map : edges) {
         std::cout << "R" << map.first << ":";
         if (!(map.second.empty())) {
+            int numPasses = 0;
             for (int i : map.second) {
-                std::cout << " R" << i;
+                if (numPasses != 0) {
+                    std::cout << ",";
+                }
+                std::cout << "R" << i;
+                numPasses++;
             }
         }
         std::cout << std::endl;

@@ -44,53 +44,78 @@ void Interpreter::evaluateRules() {
     // Build the Dependency Graph
     Graph depend;
     depend.Build(program->rules);
-    // TEST
-    // std::cout << "This is the Dependency Graph" << std::endl;
-    // depend.Print();
+    // Print the Dependency Graph
+    std::cout << "Dependency Graph" << std::endl;
+    depend.Print();
+    std::cout << std::endl;
 
     // Build the Reverse Dependency Graph
     Graph reverse;
     reverse.Reverse(depend.edges);
-    // TEST
-    // std::cout << "This is the Reverse Dependency Graph" << std::endl;
-    // reverse.Print();
 
     // Run DFS Forest on the Reverse Dependency Graph
     reverse.dfsForest();
-    // TEST: Print the Reverse Postorder
-    // std::cout << "This is the Reverse Postorder from the Reverse Dependency Graph" << std::endl;
-    // reverse.ReversePostorder();
-    // std::cout << std::endl;
 
     // Run DFS Forest on the Dependency Graph in the Reverse Postorder found above
     depend.dfsForestSCC(reverse.postorder);
-    // TEST: Print the SCCs
-    // std::cout << "TEST: " << depend.sccs.size() << std::endl;
-    // for (unsigned int i = 0; i < depend.sccs.size(); i++) {
-    //     std::cout << "SCC:";
-    //     for (auto rule : depend.sccs.at(i)) {
-    //         std::cout << " R" << rule;
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // --------------------- Old Rule Evaluation -----------------------------------
+    // Evaluate rules in each SCC
     std::cout << "Rule Evaluation" << std::endl;
-    bool dbUpdated = true;
-    int rulePasses = 0;
-    // Fixed-Point Algorithm
-    while (dbUpdated) {
-        dbUpdated = false;
-        rulePasses++;
-        // Loop through each rule in the DatalogProgram
-        for (unsigned int i = 0; i < program->rules.size(); i++) {
-            std::cout << program->rules.at(i)->toString() << "." << std::endl;
-            if (evaluateRule(program->rules.at(i))) {
-                dbUpdated = true;
+    for (unsigned int i = 0; i < depend.sccs.size(); i++) {
+        bool fixedPoint = true;
+        // Determine whether or not a Fixed Point Algorithm should be used
+        if (depend.sccs.at(i).size() == 1) {
+            for (int j : depend.sccs.at(i)) {
+                // If rule in SCC DOES NOT depends on itself, fixed point is not necessary
+                if (depend.edges.at(j).find(j) == depend.edges.at(j).end()) {
+                    fixedPoint = false;
+                    std::cout << "SCC: R" << j << std::endl;
+                    std::cout << program->rules.at(j)->toString() << "." << std::endl;
+                    evaluateRule(program->rules.at(j));
+                    std::cout << "1 passes: R" << j << std::endl;
+                }
             }
         }
+
+        // The following body of code will run if a Fixed Point Algorithm is needed
+        if (fixedPoint) {
+            // Print the Rules in this SCC
+            int numPasses = 0;
+            std::cout << "SCC: ";
+            for (int k : depend.sccs.at(i)) {
+                if (numPasses != 0) {
+                    std::cout << ",";
+                }
+                std::cout << "R" << k;
+                numPasses++;
+            }
+            std::cout << std::endl;
+            bool dbUpdated = true;
+            int rulePasses = 0;
+            // Fixed-Point Algorithm
+            while (dbUpdated) {
+                dbUpdated = false;
+                rulePasses++;
+                // Evaluate the rules in this SCC
+                for (int m : depend.sccs.at(i)) {
+                    std::cout << program->rules.at(m)->toString() << "." << std::endl;
+                    if (evaluateRule(program->rules.at(m))) {
+                        dbUpdated = true;
+                    }
+                }
+            }
+            std::cout << rulePasses << " passes: ";
+            numPasses = 0;
+            for (int n : depend.sccs.at(i)) {
+                if (numPasses != 0) {
+                    std::cout << ",";
+                }
+                std::cout << "R" << n;
+                numPasses++;
+            }
+            std::cout << std::endl;
+        }
     }
-    std::cout << std::endl << "Schemes populated after " << rulePasses << " passes through the Rules.";
-    std::cout << std::endl << std::endl;
+    std::cout << std::endl;
 }
 
 bool Interpreter::evaluateRule(const Rule* r) {
